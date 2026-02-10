@@ -13,6 +13,8 @@ struct Contact {
 // function declarations
 void display_contact(const Contact & contact);
 void display_all_contacts(Contact contacts[], int size);
+Contact* search_contact_by_name(Contact contacts[] , int size, const string &name);
+bool add_contact(Contact contacts[], int &current_size, int max_size);
 
 
 // main
@@ -48,4 +50,63 @@ void display_all_contacts(Contact contacts[], int size) {
         cout << endl;
     }
 }
+
+/**
+ * @brief Searches for a contact by name
+ * @param contacts Array of Contacts
+ * @param size Number of Contacts currently stored
+ * @param name Name of contact being searched for
+ */
+Contact* search_contact_by_name(Contact contacts[] , int size, const string &name) {
+    for (int i = 0; i < size; i++) {
+        if (name == (contacts + i) -> name ) { 
+            return contacts + i;
+        }
+    }
+    return nullptr;
+}
+
+/**
+ * @brief Adds a new contact to the array
+ * @param contacts Array of Contact objects to add to
+ * @param current_size Int indicating size of array
+ * @param max_size Int indicating max allowed size of array
+ */
+bool add_contact(Contact contacts[], int &current_size, int max_size) {
+    if (current_size >= max_size) {
+        return false;
+    }
+    
+    Contact newContact;
+    string name;
+
+    cout << "Enter name: ";
+    getline(cin, newContact.name);
+
+    
+    cout << "Enter phone: ";
+    getline(cin, newContact.phone);
+
+    cout << "Enter email: ";
+    getline(cin, newContact.email);
+
+
+    Contact* existing = search_contact_by_name(contacts, current_size, newContact.name);
+
+    // new contact added
+    if (existing == nullptr) {
+        contacts[current_size] = newContact;
+        current_size++;
+    }
+    
+    // contact already exists
+    else {
+        existing -> phone = newContact.phone;
+        existing -> email = newContact.email;
+    }
+
+    return true;
+
+}
+
 
