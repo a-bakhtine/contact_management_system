@@ -15,7 +15,8 @@ void display_contact(const Contact & contact);
 void display_all_contacts(Contact contacts[], int size);
 Contact* search_contact_by_name(Contact contacts[] , int size, const string &name);
 bool add_contact(Contact contacts[], int &current_size, int max_size);
-
+bool update_contact(Contact &contact, const string &new_phone);
+bool update_contact(Contact &contact, const string &new_phone, const string &new_email);
 
 // main
 int main() {
@@ -109,4 +110,31 @@ bool add_contact(Contact contacts[], int &current_size, int max_size) {
 
 }
 
+/**
+ * @brief Update a Contact's phone number
+ * @param contact Contact to update
+ * @param new_phone New phone number for the contact
+ */
+bool update_contact(Contact &contact, const string &new_phone) {
+    if (contact.name  == "") {
+        return false;
+    }
 
+    contact.phone = new_phone;
+    return true;
+}
+
+/**
+ * @brief Update a Contact's phone number and email
+ * @param contact Contact to update
+ * @param new_phone New phone number for the contact
+ */
+bool update_contact(Contact &contact, const string &new_phone, const string &new_email) {
+    if (contact.name  == "") {
+        return false;
+    }
+
+    contact.phone = new_phone;
+    contact.email = new_email;
+    return true;
+}
