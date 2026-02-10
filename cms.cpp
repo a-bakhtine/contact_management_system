@@ -17,6 +17,7 @@ Contact* search_contact_by_name(Contact contacts[] , int size, const string &nam
 bool add_contact(Contact contacts[], int &current_size, int max_size);
 bool update_contact(Contact &contact, const string &new_phone);
 bool update_contact(Contact &contact, const string &new_phone, const string &new_email);
+int count_contacts_with_domain(Contact contacts[], int size, const string &domain, int index = 0);
 
 // main
 int main() {
@@ -78,32 +79,32 @@ bool add_contact(Contact contacts[], int &current_size, int max_size) {
         return false;
     }
     
-    Contact newContact;
+    Contact new_contact;
     string name;
 
     cout << "Enter name: ";
-    getline(cin, newContact.name);
+    getline(cin, new_contact.name);
 
     
     cout << "Enter phone: ";
-    getline(cin, newContact.phone);
+    getline(cin, new_contact.phone);
 
     cout << "Enter email: ";
-    getline(cin, newContact.email);
+    getline(cin, new_contact.email);
 
 
-    Contact* existing = search_contact_by_name(contacts, current_size, newContact.name);
+    Contact* existing = search_contact_by_name(contacts, current_size, new_contact.name);
 
     // new contact added
     if (existing == nullptr) {
-        contacts[current_size] = newContact;
+        contacts[current_size] = new_contact;
         current_size++;
     }
     
     // contact already exists
     else {
-        existing -> phone = newContact.phone;
-        existing -> email = newContact.email;
+        existing -> phone = new_contact.phone;
+        existing -> email = new_contact.email;
     }
 
     return true;
@@ -138,3 +139,29 @@ bool update_contact(Contact &contact, const string &new_phone, const string &new
     contact.email = new_email;
     return true;
 }
+
+/**
+ * @brief Counts # of contacts with an email address from a specific domain (e.g., @gmail.com)
+ * @param contacts Array of contacts
+ * @param size Size of contacts array
+ * @param domain Domain being searched for
+ * @param index Index of last found contact with a given domain
+ */
+int count_contacts_with_domain(Contact contacts[], int size, const string &domain, int index) {
+    // base case
+    if (index >= size) {
+        return 0;
+    }
+    
+    int count = 0;
+
+    // check if current contact contains domain
+    if (((contacts + index) -> email).find(domain) != string::npos) {
+        count = 1;
+    }
+
+    // rec call
+    return count + count_contacts_with_domain(contacts, size, domain, index + 1); 
+}
+
+
