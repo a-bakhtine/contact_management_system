@@ -11,6 +11,8 @@ struct Contact {
 };
 
 // function declarations
+void display_menu();
+int get_user_choice(int min_choice, int max_choice);
 void display_contact(const Contact & contact);
 void display_all_contacts(Contact contacts[], int size);
 Contact* search_contact_by_name(Contact contacts[] , int size, const string &name);
@@ -24,10 +26,175 @@ void get_contact_statistics(Contact contacts[], int size, int &total_contacts, i
 
 // main
 int main() {
+    const int MAX_CONTACTS = 100;
+    Contact contacts[MAX_CONTACTS];
+    int current_size = 0;
+    int choice;
+
+    do {
+        display_menu();
+        choice = get_user_choice(1,8);
+
+        switch (choice) {
+            // add contacts
+            case 1: {
+                if (add_contact(contacts, current_size, MAX_CONTACTS)) {
+                    cout << "Contact added succesfully!" << endl;
+                } else {
+                    cout << "Failed to add contact, the array might be full." << endl;
+                }
+                break;
+            }
+        
+            // display all contacts
+            case 2: {
+                display_all_contacts(contacts, current_size);
+                break;
+            }
+
+            // search for a contact
+            case 3: {
+                string search_name;
+                cout << "Enter a name to search: ";
+                getline(cin, search_name);
+                Contact* searched_contact = search_contact_by_name(contacts, current_size, search_name);
+                if (searched_contact != nullptr) {
+                    cout << "Contact found:" << endl;
+                    display_contact(*searched_contact);
+                } else {
+                    cout << "Contact not found." << endl;
+                }
+
+                break;
+            }
+
+            // update a contact
+            case 4: {
+                string update_name;
+                cout << "Enter the name of a contact to update: ";
+                getline(cin, update_name);
+                Contact* searched_contact = search_contact_by_name(contacts, current_size, update_name);
+                
+                // check if contact exists
+                if (searched_contact != nullptr) {
+                    cout << "Update:" << endl;
+                    cout << "1. Phone only" << endl;
+                    cout << "2. Phone and email" << endl;
+                    int update_choice = get_user_choice(1,2);
+
+                    if (update_choice == 1) {
+                        string new_phone;
+                        cout << "Enter new phone: ";
+                        getline(cin, new_phone);
+
+                        if (update_contact(*searched_contact, new_phone)) {
+                            cout << "Contact updated succesfully!" << endl;
+                        } else {
+                            cout << "Contact update failed." << endl;
+                        }
+
+                    } else if (update_choice == 2) {
+                        string new_phone;
+                        string new_email;
+                        cout << "Enter new phone: ";
+                        getline(cin, new_phone);
+
+                        cout << "Enter new email: ";
+                        getline(cin, new_email);
+
+                        if (update_contact(*searched_contact, new_phone, new_email)) {
+                            cout << "Contact updated succesfully!" << endl;
+                        } else {
+                            cout << "Contact update failed." << endl;
+                        }
+                    
+                    }
+                } else {
+                    cout << "Contact not found." << endl;
+                }
+                
+                break;
+            }
+
+            // delete a contact
+            case 5: {
+                string delete_name;
+                cout << "Enter the name of a contact to delete: ";
+                getline(cin, delete_name);
+
+                if (delete_contact(contacts, current_size, delete_name)) {
+                    cout << "Contact deleted successfully!" << endl;
+                } else {
+                    cout << "Contact not found." << endl;
+                }
+                break;
+            }
+            
+            // count contacts by email domain
+            case 6: {
+                string domain_name;
+                cout << "Enter email domain to search (e.g. @gmail.com): ";
+                getline(cin, domain_name);
+                int count = count_contacts_with_domain(contacts, current_size, domain_name);
+                cout << "Number of contacts with domain " << domain_name << ": " << count << endl;
+                break;
+            }
+
+            // display contact statistics
+            case 7: {
+                int total, with_email, with_phone;
+                get_contact_statistics(contacts, current_size, total, with_email, with_phone);
+                break; 
+            }
+
+            // exit
+            case 8: {
+                cout << "Exiting... Goodbye! " << endl;
+                break;
+            }
+        }
+
+    } while (choice != 8);
+    
     return 0;
 }
 
 // functions
+/**
+ * @brief Displays a menu of tasks that user can perform
+ */
+void display_menu() {
+    cout << "1. Add a contact" << endl;
+    cout << "2. Display all contacts" << endl;
+    cout << "3. Search for a contact by name" << endl;
+    cout << "4. Update a contact (phone only, or phone and email)" << endl;
+    cout << "5. Delete a contact" << endl;
+    cout << "6. Count contacts by email domain" << endl;
+    cout << "7. Display contact statistics" << endl;
+    cout << "8. Exit" << endl;
+}
+
+/**
+ * @brief Get choice from user that is within provided int range
+ * @param min_choice Minimum allowed integer choice
+ * @param max_choice Maximum allowed integer choice
+ * @return An int corresponding to a task 
+ */
+int get_user_choice(int min_choice, int max_choice) {
+    string choice;
+
+    while (true) {
+        cout << "Enter your choice: ";
+        getline(cin, choice); 
+
+        if (choice.size() == 1 && choice[0] >= ('0' + min_choice) &&
+            choice[0] <= ('0' + max_choice)) {
+            return choice[0] - '0';
+        }
+        cout << "Invalid input! Please enter an integer from "
+            << min_choice << "-" << max_choice << "." << endl;
+    } 
+}
 
 /**
  * @brief Displays all information of a Contact
@@ -225,6 +392,7 @@ void get_contact_statistics(Contact contacts[], int size, int &total_contacts, i
     contacts_with_email = 0;
     contacts_with_phone = 0;
 
+    // traverse array and do counts
     for (int i = 0; i < size; i++) {
         total_contacts++;
         
