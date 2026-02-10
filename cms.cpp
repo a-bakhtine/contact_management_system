@@ -18,6 +18,8 @@ bool add_contact(Contact contacts[], int &current_size, int max_size);
 bool update_contact(Contact &contact, const string &new_phone);
 bool update_contact(Contact &contact, const string &new_phone, const string &new_email);
 int count_contacts_with_domain(Contact contacts[], int size, const string &domain, int index = 0);
+int find_contact_index(Contact contacts[], int size, const string &name);
+bool delete_contact(Contact contacts[], int &size, const string &name);
 
 // main
 int main() {
@@ -58,6 +60,7 @@ void display_all_contacts(Contact contacts[], int size) {
  * @param contacts Array of Contacts
  * @param size Number of Contacts currently stored
  * @param name Name of contact being searched for
+ * @return a pointer to a contact with the given name (else nullptr)
  */
 Contact* search_contact_by_name(Contact contacts[] , int size, const string &name) {
     for (int i = 0; i < size; i++) {
@@ -73,6 +76,7 @@ Contact* search_contact_by_name(Contact contacts[] , int size, const string &nam
  * @param contacts Array of Contact objects to add to
  * @param current_size Int indicating size of array
  * @param max_size Int indicating max allowed size of array
+ * @return True if Contact added / updated sucessfully (else false)
  */
 bool add_contact(Contact contacts[], int &current_size, int max_size) {
     if (current_size >= max_size) {
@@ -115,6 +119,7 @@ bool add_contact(Contact contacts[], int &current_size, int max_size) {
  * @brief Update a Contact's phone number
  * @param contact Contact to update
  * @param new_phone New phone number for the contact
+ * @return True if contact updated successfully (else false)
  */
 bool update_contact(Contact &contact, const string &new_phone) {
     if (contact.name  == "") {
@@ -129,6 +134,7 @@ bool update_contact(Contact &contact, const string &new_phone) {
  * @brief Update a Contact's phone number and email
  * @param contact Contact to update
  * @param new_phone New phone number for the contact
+ * @return True if Contact updated sucessfully (else false)
  */
 bool update_contact(Contact &contact, const string &new_phone, const string &new_email) {
     if (contact.name  == "") {
@@ -145,7 +151,8 @@ bool update_contact(Contact &contact, const string &new_phone, const string &new
  * @param contacts Array of contacts
  * @param size Size of contacts array
  * @param domain Domain being searched for
- * @param index Index of last found contact with a given domain
+ * @param index Current array traversal index
+ * @return The total count of contacts matching the domain
  */
 int count_contacts_with_domain(Contact contacts[], int size, const string &domain, int index) {
     // base case
@@ -164,4 +171,42 @@ int count_contacts_with_domain(Contact contacts[], int size, const string &domai
     return count + count_contacts_with_domain(contacts, size, domain, index + 1); 
 }
 
+/**
+ * @brief Returns the index of a contact by name or -1 if not found
+ * @param contacts Array of contacts
+ * @param size Size of contacts array
+ * @param name Name of contact to find
+ * @return Index of a contact based on the name (else return -1)
+ */
+int find_contact_index(Contact contacts[], int size, const string &name) {
+    for (int i = 0; i < size; i++) {
+        if ((contacts + i) -> name == name) {
+            return i;
+        }
+    }
+    return -1;
+}
 
+/**
+ * @brief Removes a contact from the contacts array
+ * @param contacts Array of contacts
+ * @param size Size of contacts array
+ * @param name Name of contact to delete
+ * @return True if deletion successful (else false)
+ */
+bool delete_contact(Contact contacts[], int &size, const string &name) {
+    int contact_index = find_contact_index(contacts, size, name);
+    // no contact to delete
+    if (contact_index == -1) {
+        return false;
+    }
+    
+    // shift contact array (performs the deletion)
+    for (int i = contact_index; i < size - 1; i++) {
+        *(contacts + i) = *(contacts + i + 1);
+    }
+
+    size--;
+
+    return true;
+}
