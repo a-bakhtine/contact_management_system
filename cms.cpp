@@ -20,6 +20,7 @@ bool update_contact(Contact &contact, const string &new_phone, const string &new
 int count_contacts_with_domain(Contact contacts[], int size, const string &domain, int index = 0);
 int find_contact_index(Contact contacts[], int size, const string &name);
 bool delete_contact(Contact contacts[], int &size, const string &name);
+void get_contact_statistics(Contact contacts[], int size, int &total_contacts, int &contacts_with_email, int &contacts_with_phone);
 
 // main
 int main() {
@@ -209,4 +210,35 @@ bool delete_contact(Contact contacts[], int &size, const string &name) {
     size--;
 
     return true;
+}
+
+/**
+ * @brief Analyzes the contact list and provides statistics
+ * @param contacts Array of contacts
+ * @param size Size of contacts array
+ * @param total_contacts Output param - total # contacts
+ * @param contacts_with_email Output param - total # contacts with email
+ * @param contacts_with_phone Output param - total # contacts with phone
+ */
+void get_contact_statistics(Contact contacts[], int size, int &total_contacts, int &contacts_with_email, int &contacts_with_phone) {
+    total_contacts = 0;
+    contacts_with_email = 0;
+    contacts_with_phone = 0;
+
+    for (int i = 0; i < size; i++) {
+        total_contacts++;
+        
+        if ((contacts + i) -> email != "") {
+            contacts_with_email++;
+        }
+
+        if ((contacts + i) -> phone != "") {
+            contacts_with_phone++;
+        }
+   } 
+
+   cout << "Contact Statistics:" << endl;
+   cout << "Total contacts: " << total_contacts << endl;
+   cout << "Contacts with email: " << contacts_with_email << endl;
+   cout << "Contacts with phone: " << contacts_with_phone << endl;
 }
