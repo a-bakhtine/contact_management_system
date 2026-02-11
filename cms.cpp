@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <cctype>
 using namespace std;
 
 // contact structure
@@ -39,9 +40,9 @@ int main() {
             // add contacts
             case 1: {
                 if (add_contact(contacts, current_size, MAX_CONTACTS)) {
-                    cout << "Contact added succesfully!" << endl;
+                    cout << "Contact saved succesfully!" << endl;
                 } else {
-                    cout << "Failed to add contact, the array might be full." << endl;
+                    cout << "Failed to add contact." << endl;
                 }
                 break;
             }
@@ -154,6 +155,12 @@ int main() {
             }
         }
 
+        if (choice != 8) {
+            cout << "\nPress Enter to continue..." << endl;
+            string filler;
+            getline(cin, filler); // to eat whats typed + newline
+        }
+
     } while (choice != 8);
     
     return 0;
@@ -252,11 +259,22 @@ bool add_contact(Contact contacts[], int &current_size, int max_size) {
     }
     
     Contact new_contact;
-    string name;
 
     cout << "Enter name: ";
     getline(cin, new_contact.name);
 
+    // check if name is empty / whitespace
+    bool valid_name = false;
+    for (char c : new_contact.name) {
+        if (!isspace(c)) {
+            valid_name = true;
+            break;
+        }
+    }
+
+    if (!valid_name) {
+        return false;
+    }
     
     cout << "Enter phone: ";
     getline(cin, new_contact.phone);
@@ -269,7 +287,7 @@ bool add_contact(Contact contacts[], int &current_size, int max_size) {
 
     // new contact added
     if (existing == nullptr) {
-        contacts[current_size] = new_contact;
+        *(contacts + current_size) = new_contact;
         current_size++;
     }
     
